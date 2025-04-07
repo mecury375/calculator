@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纯前端计算器</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-4px);
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        .input-group input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #007BFF;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb:hover {
+            background-color: #0056b3;
+        }
+
+        .input-group input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #007BFF;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .input-group input[type="range"]::-moz-range-thumb:hover {
+            background-color: #0056b3;
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #report {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+
+        #income-report,
+        #health-report,
+        #annuity-report,
+        #wealth-report {
+            margin-bottom: 24px;
+        }
+
+        .progress-bar {
+            background-color: #e9ecef;
+            border-radius: 4px;
+            height: 20px;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        .progress {
+            background-color: #007BFF;
+            border-radius: 4px;
+            height: 100%;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+        }
+
+        #asset-composition-chart {
+            margin-top: 24px;
+        }
+
+        #income-expense-chart {
+            margin-top: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #222;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        p {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold mb-6">财务账户评估计算器</h1>
+
+        <!-- 收入保障账户 -->
+        <div class="section" id="income-security">
+            <h2>收入保障账户（应急储备）</h2>
+            <p>该维度用于评估家庭应急储备资金是否充足，需考虑每月刚性支出、当前应急储蓄和赡养责任。</p>
+            <div class="input-group">
+                <label for="monthly-expenses">家庭每月刚性支出（元）：房贷、房租、生活费、教育费等每月固定支出金额。</label>
+                <input type="number" id="monthly-expenses" placeholder="请输入金额">
+            </div>
+            <div class="input-group">
+                <label for="emergency-savings">当前应急储蓄总额（元）：活期存款、货币基金等可随时取用的资金总额。</label>
+                <input type="number" id="emergency-savings" placeholder="请输入金额">
+            </div>
+            <div class="input-group">
+                <label for="annual-income">家庭年总收入（元）：家庭一年的全部收入金额。</label>
+                <input type="number" id="annual-income" placeholder="请输入金额">
+            </div>
+            <div class="input-group">
+                <label for="support-responsibility">每月赡养责任支出（元）：用于赡养老人的每月固定支出。</label>
+                <input type="number" id="support-responsibility" placeholder="请输入金额">
+            </div>
+        </div>
+
+        <!-- 健康保障账户 -->
+        <div class="section" id="health-security">
+            <h2>健康保障账户（医疗风险覆盖）</h2>
+            <p>此维度评估家庭健康保障是否足够，要考虑保费、医疗储蓄和重疾险保额。</p>
+            <div class="input-group">
+                <label for="annual-income-health">家庭年总收入（元）：与收入保障账户中的年总收入相同。</label>
+                <input type="number" id="annual-income-health" placeholder="请输入金额" disabled>
+            </div>
+            <div class="input-group">
+                <label for="health-insurance-premium">家庭健康类保险年总保费（元）：医疗险、重疾险、意外险等健康类保险一年的保费总和。</label>
+                <input type="number" id="health-insurance-premium" placeholder="请输入金额">
+            </div>
+            <div class="input-group">
+                <label for="medical-savings">已有医疗专项储蓄（元）：用于社保外自费支出的专项储蓄金额。</label>
+                <input type="number" id="medical-savings" placeholder="请输入金额">
+            </div>
+            <div class="input-group">
+                <label for="critical-illness-insurance">重疾险总保额（万元）：家庭所拥有的重疾险的总保额。</label>
+                <input type="number" id="critical-illness-insurance" placeholder="请输入金额">
+            </div>
+        </div>
+
+        <!-- 年金领取账户 -->
+        <div class="section" id="annuity-account">
+            <h2>年金领取账户（养老/教育规划）</h2>
+            <p>该维度评估养老和教育规划的资金储备情况，涉及养老储蓄、退休规划和教育金目标。</p>
+            <!-- 养老部分 -->
+            <div class="input-group">
+                <label for="pension-savings">当前养老储蓄总额（元）：商业年金险、个人养老金账户等养老相关的储蓄总额。</label>
+                <input type="number" id="pension-savings" placeholder="请输入金额">
+            </div>
+            <div class="input-group">
+                <label for="retirement-age">预期退休年龄：计划退休的年龄。</label>
+                <select id="retirement-age">
+                    <option value="50">50岁</option>
+                    <option value="55">55岁</option>
+                    <option value="60">60岁</option>
+                    <option value="65">65岁</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="retirement-living-expenses">目标退休后月生活费（元）：退休后每月期望的生活费用。</label>
+                <input type="number" id="retirement-living-expenses" placeholder="请输入金额">
+            </div>
+            <!-- 教育金部分 -->
+            <div class="input-group">
+                <label>是否有子女教育规划</label>
+                <input type="radio" id="education-plan-yes" name="education-plan" value="yes">
+                <label for="education-plan-yes">是</label>
+                <input type="radio" id="education-plan-no" name="education-plan" value="no" checked>
+                <label for="education-plan-no">否</label>
+            </div>
+            <div class="input-group" id="education-plan-details" style="display: none;">
+                <label for="education-goal">教育金目标总额（万元）：如留学等教育目标所需的资金总额。</label>
+                <input type="number" id="education-goal" placeholder="请输入金额">
+                <label for="education-years">距离用款剩余年限：距离使用教育金的剩余年数。</label>
+                <input type="number" id="education-years" placeholder="请输入年限">
+            </div>
+        </div>
+
+        <!-- 财富增值账户 -->
+        <div class="section" id="wealth-account">
+            <h2>财富增值账户（长期投资）</h2>
+            <p>该维度评估家庭资产配置和投资规划是否合理，需考虑投资者年龄、资产占比和定投金额。</p>
+            <div class="input-group">
+                <label for="investor-age">家庭主要投资者年龄（岁）：家庭中主要进行投资决策的人的年龄。</label>
+                <input type="number" id="investor-age" placeholder="请输入年龄">
+            </div>
+            <div class="input-group">
+                <label for="equity-assets">当前权益类资产占比（%）：股票、基金、房产等权益类资产在总资产中的占比。</label>
+                <input type="range" id="equity-assets" min="0" max="100" value="0">
+                <span id="equity-assets-value">0%</span>
+            </div>
+            <div class="input-group">
+                <label for="fixed-income-assets">当前固收类资产占比（%）：存款、债券、理财等固收类资产在总资产中的占比。</label>
+                <input type="range" id="fixed-income-assets" min="0" max="100" value="100">
+                <span id="fixed-income-assets-value">100%</span>
+            </div>
+            <div class="input-group">
+                <label for="monthly-investment">每年可用于定投的结余资金（元）：家庭每年可用于定期投资的剩余资金。</label>
+                <input type="number" id="monthly-investment" placeholder="请输入金额">
+            </div>
+        </div>
+
+        <button onclick="calculate()">计算</button>
+
+        <!-- 报告部分 -->
+        <div id="report" style="display: none;">
+            <h2>评估报告</h2>
+            <div id="income-report"></div>
+            <div id="health-report"></div>
+            <div id="annuity-report"></div>
+            <div id="wealth-report"></div>
+            <div id="asset-composition-chart"></div>
+            <div id="income-expense-chart"></div>
+        </div>
+    </div>
+
+    <script>
+        // 同步家庭年总收入
+        document.getElementById('annual-income').addEventListener('input', function () {
+            document.getElementById('annual-income-health').value = this.value;
+        });
+
+        // 显示/隐藏教育金规划详情
+        const educationPlanYes = document.getElementById('education-plan-yes');
+        const educationPlanDetails = document.getElementById('education-plan-details');
+        educationPlanYes.addEventListener('change', function () {
+            if (this.checked) {
+                educationPlanDetails.style.display = 'block';
+            } else {
+                educationPlanDetails.style.display = 'none';
+            }
+        });
+
+        // 同步权益类和固收类资产占比
+        const equityAssets = document.getElementById('equity-assets');
+        const fixedIncomeAssets = document.getElementById('fixed-income-assets');
+        const equityAssetsValue = document.getElementById('equity-assets-value');
+        const fixedIncomeAssetsValue = document.getElementById('fixed-income-assets-value');
+
+        equityAssets.addEventListener('input', function () {
+            const value = parseInt(this.value);
+            fixedIncomeAssets.value = 100 - value;
+            equityAssetsValue.textContent = `${value}%`;
+            fixedIncomeAssetsValue.textContent = `${100 - value}%`;
+        });
+
+        fixedIncomeAssets.addEventListener('input', function () {
+            const value = parseInt(this.value);
+            equityAssets.value = 100 - value;
+            equityAssetsValue.textContent = `${100 - value}%`;
+            fixedIncomeAssetsValue.textContent = `${value}%`;
+        });
+
+        function calculate() {
+            // 获取输入值
+            const monthlyExpenses = parseFloat(document.getElementById('monthly-expenses').value);
+            const emergencySavings = parseFloat(document.getElementById('emergency-savings').value);
+            const annualIncome = parseFloat(document.getElementById('annual-income').value);
+            const healthInsurancePremium = parseFloat(document.getElementById('health-insurance-premium').value);
+            const medicalSavings = parseFloat(document.getElementById('medical-savings').value);
+            const criticalIllnessInsurance = parseFloat(document.getElementById('critical-illness-insurance').value);
+            const pensionSavings = parseFloat(document.getElementById('pension-savings').value);
+            const retirementAge = parseInt(document.getElementById('retirement-age').value);
+            const retirementLivingExpenses = parseFloat(document.getElementById('retirement-living-expenses').value);
+            const educationPlan = document.querySelector('input[name="education-plan"]:checked').value;
+            const educationGoal = parseFloat(document.getElementById('education-goal').value);
+            const educationYears = parseInt(document.getElementById('education-years').value);
+            const investorAge = parseInt(document.getElementById('investor-age').value);
+            const equityAssets = parseInt(document.getElementById('equity-assets').value);
+            const monthlyInvestment = parseFloat(document.getElementById('monthly-investment').value);
+            const supportResponsibility = parseFloat(document.getElementById('support-responsibility').value);
+
+            // 考虑赡养责任后的每月刚性支出
+            const totalMonthlyExpenses = monthlyExpenses + supportResponsibility;
+
+            // 收入保障账户
+            const incomeCoverage = emergencySavings / totalMonthlyExpenses;
+            const incomeRatio = (emergencySavings / annualIncome) * 100;
+            let incomeCoverageStatus = '未达标';
+            let incomeRatioStatus = '不合理区间';
+            if (incomeCoverage >= 3 && incomeCoverage <= 6) {
+                incomeCoverageStatus = '达标';
+            }
+            if (incomeRatio >= 10 && incomeRatio <= 15) {
+                incomeRatioStatus = '合理区间';
+            }
+            let incomeCoverageSuggestion = '';
+            let incomeRatioSuggestion = '';
+            if (incomeCoverage < 3) {
+                incomeCoverageSuggestion = '建议增加应急储蓄，可每月定额储蓄一部分收入。';
+            } else if (incomeCoverage > 6) {
+                incomeCoverageSuggestion = '应急储蓄过多，可考虑将部分资金用于其他投资。';
+            }
+            if (incomeRatio < 10) {
+                incomeRatioSuggestion = '应急储蓄占比过低，可适当提高储蓄比例。';
+            } else if (incomeRatio > 15) {
+                incomeRatioSuggestion = '应急储蓄占比过高，可将部分资金投入到收益更高的资产中。';
+            }
+            const incomeCoverageRate = (incomeCoverage / 6) * 100;
+            const incomeRatioRate = (incomeRatio / 15) * 100;
+            const incomeReport = `
+                <h3><strong>收入保障账户</strong></h3>
+                <p>当前覆盖率：${incomeCoverage.toFixed(1)}个月支出（${incomeCoverageStatus}），应达到3 - 6个月支出。 ${incomeCoverageSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${incomeCoverageRate}%">${incomeCoverageRate.toFixed(1)}%</div>
+                </div>
+                <p>占收入比：${incomeRatio.toFixed(1)}%（${incomeRatioStatus}），应达到10% - 15%。 ${incomeRatioSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${incomeRatioRate}%">${incomeRatioRate.toFixed(1)}%</div>
+                </div>
+            `;
+            document.getElementById('income-report').innerHTML = incomeReport;
+
+            // 健康保障账户
+            const premiumRatio = (healthInsurancePremium / annualIncome) * 100;
+            const criticalIllnessGoal = annualIncome * 3 / 10000;
+            let premiumRatioStatus = '不合理区间';
+            let medicalSavingsStatus = '不达标';
+            let criticalIllnessStatus = '不达标';
+            if (premiumRatio >= 5 && premiumRatio <= 10) {
+                premiumRatioStatus = '合理区间';
+            }
+            if (medicalSavings >= 10000 && medicalSavings <= 20000) {
+                medicalSavingsStatus = '达标';
+            }
+            if (criticalIllnessInsurance >= criticalIllnessGoal) {
+                criticalIllnessStatus = '达标';
+            }
+            let premiumRatioSuggestion = '';
+            let medicalSavingsSuggestion = '';
+            let criticalIllnessSuggestion = '';
+            if (premiumRatio < 5) {
+                premiumRatioSuggestion = '保费占比过低，建议增加健康类保险投入。';
+            } else if (premiumRatio > 10) {
+                premiumRatioSuggestion = '保费占比过高，可重新评估保险方案，适当降低保费。';
+            }
+            if (medicalSavings < 10000) {
+                medicalSavingsSuggestion = '医疗专项储蓄不足，建议每月额外储蓄一部分资金。';
+            }
+            if (criticalIllnessInsurance < criticalIllnessGoal) {
+                criticalIllnessSuggestion = `重疾保额不足，需补充${(criticalIllnessGoal - criticalIllnessInsurance).toFixed(1)}万元保额。`;
+            }
+            const premiumRatioRate = (premiumRatio / 10) * 100;
+            const medicalSavingsRate = (medicalSavings / 20000) * 100;
+            const criticalIllnessRate = (criticalIllnessInsurance / criticalIllnessGoal) * 100;
+            const healthReport = `
+                <h3><strong>健康保障账户</strong></h3>
+                <p>保费占比：${premiumRatio.toFixed(1)}%（${premiumRatioStatus}），应达到5% - 10%。 ${premiumRatioSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${premiumRatioRate}%">${premiumRatioRate.toFixed(1)}%</div>
+                </div>
+                <p>医疗专项储蓄：${medicalSavingsStatus}，应达到1 - 2万元。 ${medicalSavingsSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${medicalSavingsRate}%">${medicalSavingsRate.toFixed(1)}%</div>
+                </div>
+                <p>重疾保额缺口：${(criticalIllnessGoal - criticalIllnessInsurance).toFixed(1)}万元（${criticalIllnessStatus === '达标' ? '达标' : '需补充'}），应达到3倍年收入。 ${criticalIllnessSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${criticalIllnessRate}%">${criticalIllnessRate.toFixed(1)}%</div>
+                </div>
+            `;
+            document.getElementById('health-report').innerHTML = healthReport;
+
+            // 年金领取账户
+            const pensionGoal = retirementLivingExpenses * 12 * (80 - retirementAge);
+            const pensionRatio = (pensionSavings / annualIncome) * 100;
+            let pensionRatioStatus = '不达标';
+            if (pensionRatio >= 10 && pensionRatio <= 15) {
+                pensionRatioStatus = '达标';
+            }
+            let pensionRatioSuggestion = '';
+            if (pensionRatio < 10) {
+                pensionRatioSuggestion = '养老储蓄占比过低，建议增加养老储蓄投入。';
+            } else if (pensionRatio > 15) {
+                pensionRatioSuggestion = '养老储蓄占比过高，可适当调整投资组合。';
+            }
+            let educationReport = '';
+            if (educationPlan === 'yes') {
+                const annualEducationSavings = educationGoal / (educationYears * Math.pow(1.05, educationYears));
+                let educationSuggestion = '';
+                if (annualEducationSavings > 0) {
+                    educationSuggestion = `教育金储蓄不足，建议每年储蓄至少${annualEducationSavings.toFixed(1)}万元。`;
+                }
+                const educationRate = (annualEducationSavings / educationGoal) * 100;
+                educationReport = `
+                    <p>教育金储蓄达标情况：${annualEducationSavings > 0 ? '需补充' : '达标'}，应满足目标倒推公式计算的金额。 ${educationSuggestion}</p>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${educationRate}%">${educationRate.toFixed(1)}%</div>
+                    </div>
+                `;
+            }
+            const pensionRatioRate = (pensionRatio / 15) * 100;
+            const annuityReport = `
+                <h3><strong>年金领取账户</strong></h3>
+                <p>养老储蓄缺口：${(pensionGoal - pensionSavings).toFixed(1)}元</p>
+                <p>养老储蓄占比：${pensionRatio.toFixed(1)}%（${pensionRatioStatus}），应达到10% - 15%。 ${pensionRatioSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${pensionRatioRate}%">${pensionRatioRate.toFixed(1)}%</div>
+                </div>
+                ${educationReport}
+            `;
+            document.getElementById('annuity-report').innerHTML = annuityReport;
+
+            // 财富增值账户
+            const equityRule = 100 - investorAge;
+            const equityDeviation = equityAssets - equityRule;
+            const investmentRatio = (monthlyInvestment / annualIncome) * 100;
+            let equityDeviationStatus = '不合理';
+            let investmentRatioStatus = '不合理区间';
+            if (equityDeviation >= -5 && equityDeviation <= 5) {
+                equityDeviationStatus = '合理';
+            }
+            if (investmentRatio >= 20 && investmentRatio <= 30) {
+                investmentRatioStatus = '合理区间';
+            }
+            let equityDeviationSuggestion = '';
+            let investmentRatioSuggestion = '';
+            if (equityDeviation < -5) {
+                equityDeviationSuggestion = '权益类资产占比过低，建议适当增加股票、基金等权益类资产配置。';
+            } else if (equityDeviation > 5) {
+                equityDeviationSuggestion = '权益类资产占比过高，建议降低股票、基金等权益类资产配置。';
+            }
+            if (investmentRatio < 20) {
+                investmentRatioSuggestion = '定投金额占比过低，建议增加每月定投金额。';
+            } else if (investmentRatio > 30) {
+                investmentRatioSuggestion = '定投金额占比过高，可适当减少定投金额。';
+            }
+            const equityDeviationRate = (equityAssets / equityRule) * 100;
+            const investmentRatioRate = (investmentRatio / 30) * 100;
+            const wealthReport = `
+                <h3><strong>财富增值账户</strong></h3>
+                <p>权益类偏离度：${equityDeviation.toFixed(1)}%（${equityDeviationStatus}），应符合「100 - 年龄」法则 ±5%。 ${equityDeviationSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${equityDeviationRate}%">${equityDeviationRate.toFixed(1)}%</div>
+                </div>
+                <p>定投金额占比：${investmentRatio.toFixed(1)}%（${investmentRatioStatus}），应达到20% - 30%。 ${investmentRatioSuggestion}</p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: ${investmentRatioRate}%">${investmentRatioRate.toFixed(1)}%</div>
+                </div>
+            `;
+            document.getElementById('wealth-report').innerHTML = wealthReport;
+
+            // 家庭生命周期阶段
+            let familyStage = '';
+            if (investorAge < 35) {
+                familyStage = '年轻家庭';
+            } else if (investorAge >= 35 && investorAge <= 50) {
+                familyStage = '中年家庭';
+            } else {
+                familyStage = '退休家庭';
+            }
+            const stageReport = `
+                <p>家庭生命周期阶段：${familyStage}</p>
+            `;
+            document.getElementById('report').innerHTML += stageReport;
+
+            // 显示报告
+            document.getElementById('report').style.display = 'block';
+
+            // 绘制圆环图显示4大账户资产构成情况
+            const assetCompositionCtx = document.createElement('canvas');
+            document.getElementById('asset-composition-chart').appendChild(assetCompositionCtx);
+            const assetCompositionChart = new Chart(assetCompositionCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['收入保障', '健康保障', '年金领取', '财富增值'],
+                    datasets: [{
+                        data: [emergencySavings, medicalSavings + healthInsurancePremium, pensionSavings, equityAssets / 100 * (emergencySavings + medicalSavings + pensionSavings)],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 205, 86, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 205, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: '4大账户资产构成情况'
+                        }
+                    }
+                }
+            });
+
+            // 绘制倒U形曲线展示用户目前的资产管理重点
+            const incomeExpenseCtx = document.createElement('canvas');
+            document.getElementById('income-expense-chart').appendChild(incomeExpenseCtx);
+            const incomeExpenseChart = new Chart(incomeExpenseCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['18', '35', '60'],
+                    datasets: [{
+                        label: '预计收入',
+                        data: [annualIncome * 0.5, annualIncome, annualIncome * 0.2],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: false,
+                        tension: 0.1
+                    }, {
+                        label: '预计支出',
+                        data: [totalMonthlyExpenses * 12 * 0.5, totalMonthlyExpenses * 12, totalMonthlyExpenses * 12 * 0.8],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: '年龄'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: '金额（元）'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '用户目前的资产管理重点'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
+    
