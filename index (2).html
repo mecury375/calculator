@@ -3,290 +3,274 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>纯前端计算器</title>
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* 全局样式 */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            background-color: #f9fafb;
+            color: #374151;
             margin: 0;
             padding: 0;
+            line-height: 1.5;
         }
 
+        /* 容器样式 */
         .container {
-            max-width: 1200px;
+            width: 90%;
+            max-width: 768px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 20px 0;
         }
 
-        .section {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 24px;
-            margin-bottom: 24px;
-            transition: transform 0.3s ease;
+        /* 标题样式 */
+        h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 1.5rem;
         }
 
-        .section:hover {
-            transform: translateY(-4px);
-        }
-
+        /* 输入框组样式 */
         .input-group {
-            margin-bottom: 18px;
+            margin-bottom: 1rem;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #555;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
         }
 
         .input-group input,
         .input-group select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
             transition: border-color 0.3s ease;
         }
 
         .input-group input:focus,
         .input-group select:focus {
-            border-color: #007BFF;
+            border-color: #3b82f6;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
+        /* 滑块样式 */
         .input-group input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
             width: 100%;
-            height: 6px;
-            background: #ddd;
-            border-radius: 3px;
+            height: 0.375rem;
+            background: #e5e7eb;
+            border-radius: 0.375rem;
             outline: none;
         }
 
         .input-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #007BFF;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: #3b82f6;
             border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         .input-group input[type="range"]::-webkit-slider-thumb:hover {
-            background-color: #0056b3;
+            background-color: #2563eb;
         }
 
         .input-group input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #007BFF;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: #3b82f6;
             border-radius: 50%;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         .input-group input[type="range"]::-moz-range-thumb:hover {
-            background-color: #0056b3;
+            background-color: #2563eb;
         }
 
+        /* 按钮样式 */
         button {
-            padding: 12px 24px;
-            background-color: #007BFF;
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #3b82f6;
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 0.375rem;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
             transition: background-color 0.3s ease;
-            font-size: 16px;
-            font-weight: 600;
+            margin-top: 1.5rem;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #2563eb;
         }
 
+        /* 报告部分样式 */
         #report {
             background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 24px;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
         }
 
-        #income-report,
-        #health-report,
-        #annuity-report,
-        #wealth-report {
-            margin-bottom: 24px;
+        #report h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
         }
 
+        #report h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        #report p {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        /* 进度条样式 */
         .progress-bar {
-            background-color: #e9ecef;
-            border-radius: 4px;
-            height: 20px;
-            margin-top: 8px;
+            background-color: #e5e7eb;
+            border-radius: 0.375rem;
+            height: 0.75rem;
+            margin-top: 0.25rem;
             position: relative;
         }
 
         .progress {
-            background-color: #007BFF;
-            border-radius: 4px;
+            background-color: #3b82f6;
+            border-radius: 0.375rem;
             height: 100%;
             text-align: center;
-            line-height: 20px;
+            line-height: 0.75rem;
             color: white;
+            font-size: 0.75rem;
         }
 
-        #asset-composition-chart {
-            margin-top: 24px;
-        }
-
+        /* 图表容器样式 */
+        #asset-composition-chart,
         #income-expense-chart {
-            margin-top: 24px;
-        }
-
-        h2 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #222;
-        }
-
-        h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #222;
-        }
-
-        p {
-            font-size: 14px;
-            margin-bottom: 6px;
-            color: #555;
+            margin-top: 1.5rem;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1 class="text-3xl font-bold mb-6">财务账户评估计算器</h1>
+        <h1>财务账户评估计算器</h1>
 
         <!-- 收入保障账户 -->
-        <div class="section" id="income-security">
-            <h2>收入保障账户（应急储备）</h2>
-            <p>该维度用于评估家庭应急储备资金是否充足，需考虑每月刚性支出、当前应急储蓄和赡养责任。</p>
-            <div class="input-group">
-                <label for="monthly-expenses">家庭每月刚性支出（元）：房贷、房租、生活费、教育费等每月固定支出金额。</label>
-                <input type="number" id="monthly-expenses" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label for="emergency-savings">当前应急储蓄总额（元）：活期存款、货币基金等可随时取用的资金总额。</label>
-                <input type="number" id="emergency-savings" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label for="annual-income">家庭年总收入（元）：家庭一年的全部收入金额。</label>
-                <input type="number" id="annual-income" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label for="support-responsibility">每月赡养责任支出（元）：用于赡养老人的每月固定支出。</label>
-                <input type="number" id="support-responsibility" placeholder="请输入金额">
-            </div>
+        <div class="input-group">
+            <label for="monthly-expenses">家庭每月刚性支出（元）：房贷、房租、生活费、教育费等每月固定支出金额。</label>
+            <input type="number" id="monthly-expenses" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label for="emergency-savings">当前应急储蓄总额（元）：活期存款、货币基金等可随时取用的资金总额。</label>
+            <input type="number" id="emergency-savings" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label for="annual-income">家庭年总收入（元）：家庭一年的全部收入金额。</label>
+            <input type="number" id="annual-income" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label for="support-responsibility">每月赡养责任支出（元）：用于赡养老人的每月固定支出。</label>
+            <input type="number" id="support-responsibility" placeholder="请输入金额">
         </div>
 
         <!-- 健康保障账户 -->
-        <div class="section" id="health-security">
-            <h2>健康保障账户（医疗风险覆盖）</h2>
-            <p>此维度评估家庭健康保障是否足够，要考虑保费、医疗储蓄和重疾险保额。</p>
-            <div class="input-group">
-                <label for="annual-income-health">家庭年总收入（元）：与收入保障账户中的年总收入相同。</label>
-                <input type="number" id="annual-income-health" placeholder="请输入金额" disabled>
-            </div>
-            <div class="input-group">
-                <label for="health-insurance-premium">家庭健康类保险年总保费（元）：医疗险、重疾险、意外险等健康类保险一年的保费总和。</label>
-                <input type="number" id="health-insurance-premium" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label for="medical-savings">已有医疗专项储蓄（元）：用于社保外自费支出的专项储蓄金额。</label>
-                <input type="number" id="medical-savings" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label for="critical-illness-insurance">重疾险总保额（万元）：家庭所拥有的重疾险的总保额。</label>
-                <input type="number" id="critical-illness-insurance" placeholder="请输入金额">
-            </div>
+        <div class="input-group">
+            <label for="annual-income-health">家庭年总收入（元）：与收入保障账户中的年总收入相同。</label>
+            <input type="number" id="annual-income-health" placeholder="请输入金额" disabled>
+        </div>
+        <div class="input-group">
+            <label for="health-insurance-premium">家庭健康类保险年总保费（元）：医疗险、重疾险、意外险等健康类保险一年的保费总和。</label>
+            <input type="number" id="health-insurance-premium" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label for="medical-savings">已有医疗专项储蓄（元）：用于社保外自费支出的专项储蓄金额。</label>
+            <input type="number" id="medical-savings" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label for="critical-illness-insurance">重疾险总保额（万元）：家庭所拥有的重疾险的总保额。</label>
+            <input type="number" id="critical-illness-insurance" placeholder="请输入金额">
         </div>
 
         <!-- 年金领取账户 -->
-        <div class="section" id="annuity-account">
-            <h2>年金领取账户（养老/教育规划）</h2>
-            <p>该维度评估养老和教育规划的资金储备情况，涉及养老储蓄、退休规划和教育金目标。</p>
-            <!-- 养老部分 -->
-            <div class="input-group">
-                <label for="pension-savings">当前养老储蓄总额（元）：商业年金险、个人养老金账户等养老相关的储蓄总额。</label>
-                <input type="number" id="pension-savings" placeholder="请输入金额">
-            </div>
-            <div class="input-group">
-                <label for="retirement-age">预期退休年龄：计划退休的年龄。</label>
-                <select id="retirement-age">
-                    <option value="50">50岁</option>
-                    <option value="55">55岁</option>
-                    <option value="60">60岁</option>
-                    <option value="65">65岁</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="retirement-living-expenses">目标退休后月生活费（元）：退休后每月期望的生活费用。</label>
-                <input type="number" id="retirement-living-expenses" placeholder="请输入金额">
-            </div>
-            <!-- 教育金部分 -->
-            <div class="input-group">
-                <label>是否有子女教育规划</label>
-                <input type="radio" id="education-plan-yes" name="education-plan" value="yes">
-                <label for="education-plan-yes">是</label>
-                <input type="radio" id="education-plan-no" name="education-plan" value="no" checked>
-                <label for="education-plan-no">否</label>
-            </div>
-            <div class="input-group" id="education-plan-details" style="display: none;">
-                <label for="education-goal">教育金目标总额（万元）：如留学等教育目标所需的资金总额。</label>
-                <input type="number" id="education-goal" placeholder="请输入金额">
-                <label for="education-years">距离用款剩余年限：距离使用教育金的剩余年数。</label>
-                <input type="number" id="education-years" placeholder="请输入年限">
-            </div>
+        <div class="input-group">
+            <label for="pension-savings">当前养老储蓄总额（元）：商业年金险、个人养老金账户等养老相关的储蓄总额。</label>
+            <input type="number" id="pension-savings" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label for="retirement-age">预期退休年龄：计划退休的年龄。</label>
+            <select id="retirement-age">
+                <option value="50">50岁</option>
+                <option value="55">55岁</option>
+                <option value="60">60岁</option>
+                <option value="65">65岁</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="retirement-living-expenses">目标退休后月生活费（元）：退休后每月期望的生活费用。</label>
+            <input type="number" id="retirement-living-expenses" placeholder="请输入金额">
+        </div>
+        <div class="input-group">
+            <label>是否有子女教育规划</label>
+            <input type="radio" id="education-plan-yes" name="education-plan" value="yes">
+            <label for="education-plan-yes">是</label>
+            <input type="radio" id="education-plan-no" name="education-plan" value="no" checked>
+            <label for="education-plan-no">否</label>
+        </div>
+        <div class="input-group" id="education-plan-details" style="display: none;">
+            <label for="education-goal">教育金目标总额（万元）：如留学等教育目标所需的资金总额。</label>
+            <input type="number" id="education-goal" placeholder="请输入金额">
+            <label for="education-years">距离用款剩余年限：距离使用教育金的剩余年数。</label>
+            <input type="number" id="education-years" placeholder="请输入年限">
         </div>
 
         <!-- 财富增值账户 -->
-        <div class="section" id="wealth-account">
-            <h2>财富增值账户（长期投资）</h2>
-            <p>该维度评估家庭资产配置和投资规划是否合理，需考虑投资者年龄、资产占比和定投金额。</p>
-            <div class="input-group">
-                <label for="investor-age">家庭主要投资者年龄（岁）：家庭中主要进行投资决策的人的年龄。</label>
-                <input type="number" id="investor-age" placeholder="请输入年龄">
-            </div>
-            <div class="input-group">
-                <label for="equity-assets">当前权益类资产占比（%）：股票、基金、房产等权益类资产在总资产中的占比。</label>
-                <input type="range" id="equity-assets" min="0" max="100" value="0">
-                <span id="equity-assets-value">0%</span>
-            </div>
-            <div class="input-group">
-                <label for="fixed-income-assets">当前固收类资产占比（%）：存款、债券、理财等固收类资产在总资产中的占比。</label>
-                <input type="range" id="fixed-income-assets" min="0" max="100" value="100">
-                <span id="fixed-income-assets-value">100%</span>
-            </div>
-            <div class="input-group">
-                <label for="monthly-investment">每年可用于定投的结余资金（元）：家庭每年可用于定期投资的剩余资金。</label>
-                <input type="number" id="monthly-investment" placeholder="请输入金额">
-            </div>
+        <div class="input-group">
+            <label for="investor-age">家庭主要投资者年龄（岁）：家庭中主要进行投资决策的人的年龄。</label>
+            <input type="number" id="investor-age" placeholder="请输入年龄">
+        </div>
+        <div class="input-group">
+            <label for="equity-assets">当前权益类资产占比（%）：股票、基金、房产等权益类资产在总资产中的占比。</label>
+            <input type="range" id="equity-assets" min="0" max="100" value="0">
+            <span id="equity-assets-value">0%</span>
+        </div>
+        <div class="input-group">
+            <label for="fixed-income-assets">当前固收类资产占比（%）：存款、债券、理财等固收类资产在总资产中的占比。</label>
+            <input type="range" id="fixed-income-assets" min="0" max="100" value="100">
+            <span id="fixed-income-assets-value">100%</span>
+        </div>
+        <div class="input-group">
+            <label for="monthly-investment">每年可用于定投的结余资金（元）：家庭每年可用于定期投资的剩余资金。</label>
+            <input type="number" id="monthly-investment" placeholder="请输入金额">
         </div>
 
         <button onclick="calculate()">计算</button>
